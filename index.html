@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Film Galaxy</title>
+    <link rel="icon" type="images/x-icon" href="https://cdn.icon-icons.com/icons2/1874/PNG/512/iconfinder-popcorncinemafilmsweetdessertfoodfastfood-4306481_119912.png">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: #141414;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease;
+            z-index: 1000;
+        }
+
+        header.scrolled {
+            background-color: rgba(20, 20, 20, 0.9);
+            backdrop-filter: blur(5px);
+        }
+
+        .logo {
+            color: #e50914;
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.1);
+        }
+
+        nav ul {
+            display: flex;
+            list-style-type: none;
+        }
+
+        nav ul li {
+            margin-left: 30px;
+        }
+
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-size: 1.1rem;
+            font-weight: 500;
+            position: relative;
+        }
+
+        nav ul li a:hover {
+            color: #e50914;
+        }
+
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: #e50914;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        nav ul li a:hover::after {
+            transform: scaleX(1);
+        }
+
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0 50px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 100%), url('https://cdn.pixabay.com/photo/2022/02/21/06/42/tablet-7025900_1280.jpg') no-repeat center center / cover;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 150px;
+            background: linear-gradient(to top, #141414, transparent);
+        }
+
+        .hero-content {
+            max-width: 800px;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1s ease forwards 0.5s;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .hero p {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1s ease forwards 0.7s;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background-color: #e50914;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1s ease forwards 0.9s;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            background-color: #f40612;
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(229, 9, 20, 0.4);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300px;
+            height: 300px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.5s ease;
+        }
+
+        .btn:hover::before {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .btn-secondary {
+            background-color: rgba(109, 109, 110, 0.7);
+            margin-left: 20px;
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(109, 109, 110, 0.9);
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #e50914;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .movies-row {
+            padding: 80px 50px;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1s ease;
+        }
+
+        .movies-row.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .movies-row h2 {
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+            color: #fff;
+        }
+
+        .movie-list {
+            display: flex;
+            overflow-x: auto;
+            padding-bottom: 30px;
+            scroll-behavior: smooth;
+        }
+
+        .movie-list::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .movie-list::-webkit-scrollbar-track {
+            background: #2c2c2c;
+            border-radius: 10px;
+        }
+
+        .movie-list::-webkit-scrollbar-thumb {
+            background: #e50914;
+            border-radius: 10px;
+        }
+
+        .movie {
+            flex: 0 0 auto;
+            width: 280px;
+            margin-right: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            cursor: pointer;
+        }
+
+        .movie:hover {
+            transform: scale(1.05) translateY(-10px);
+            z-index: 2;
+        }
+
+        .movie img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .movie:hover img {
+            filter: brightness(0.7);
+        }
+
+        .movie-info {
+            position: absolute;
+            bottom: -100%;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            transition: all 0.3s ease;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+
+        .movie:hover .movie-info {
+            bottom: 0;
+        }
+
+        .movie-info h3 {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: #e50914;
+        }
+
+        .movie-info p {
+            font-size: 1rem;
+            color: #ccc;
+            margin-bottom: 15px;
+        }
+
+        .movie-info .btn {
+            padding: 10px 20px;
+            font-size: 0.9rem;
+        }
+
+        .featured-section {
+            display: flex;
+            align-items: center;
+            padding: 100px 50px;
+            background: linear-gradient(to right, #141414, transparent), url('https://cdn.pixabay.com/photo/2022/02/21/06/47/applications-7025904_1280.jpg') no-repeat right center / cover;
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: all 1s ease;
+        }
+
+        .featured-section.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .featured-content {
+            max-width: 600px;
+        }
+
+        .featured-content h2 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            color: #e50914;
+        }
+
+        .featured-content p {
+            font-size: 1.4rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .categories-section {
+            padding: 80px 50px;
+            text-align: center;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .category-item {
+            background-color: rgba(229, 9, 20, 0.1);
+            border-radius: 10px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .category-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(229, 9, 20, 0.2);
+        }
+
+        .category-item i {
+            font-size: 3rem;
+            color: #e50914;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .category-item:hover i {
+            transform: scale(1.2);
+        }
+
+        .category-item h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .category-item p {
+            font-size: 1rem;
+            color: #ccc;
+        }
+
+        .newsletter-section {
+            background-color: #1a1a1a;
+            padding: 80px 50px;
+            text-align: center;
+        }
+
+        .newsletter-form {
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+        }
+
+        .newsletter-form input[type="email"] {
+            flex-grow: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 5px 0 0 5px;
+            font-size: 1rem;
+        }
+
+        .newsletter-form button {
+            padding: 15px 30px;
+            background-color: #e50914;
+            color: #fff;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .newsletter-form button:hover {
+            background-color: #f40612;
+            transform: scale(1.05);
+        }
+
+        .testimonials-section {
+            padding: 80px 50px;
+            background-color: #0a0a0a;
+        }
+
+        .testimonial-slider {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .testimonial {
+            padding: 20px;
+        }
+
+        .testimonial p {
+            font-size: 1.2rem;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        .testimonial-author {
+            font-weight: bold;
+            color: #e50914;
+        }
+
+        .faq-section {
+            padding: 80px 50px;
+        }
+
+        .faq-list {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 20px;
+        }
+
+        .faq-question {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .faq-answer {
+            display: none;
+            padding: 10px;
+            background-color: #1a1a1a;
+            border-radius: 5px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 50px 20px;
+            background-color: #0a0a0a;
+            position: relative;
+            overflow: hidden;
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 200%;
+            height: 2px;
+            background: linear-gradient(to right, transparent, #e50914, transparent);
+            animation: footerLine 5s linear infinite;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-column {
+            flex: 1;
+            min-width: 200px;
+            margin-bottom: 30px;
+        }
+
+        .footer-column h3 {
+            color: #e50914;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .footer-column ul {
+            list-style-type: none;
+        }
+
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-column ul li a {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-column ul li a:hover {
+            color: #e50914;
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .social-icons a {
+            color: #fff;
+            font-size: 1.5rem;
+            margin: 0 15px;
+            transition: all 0.3s ease;
+        }
+
+        .social-icons a:hover {
+            color: #e50914;
+            transform: translateY(-5px);
+        }
+
+        @keyframes footerLine {
+            0% {
+                left: -100%;
+            }
+            100% {
+                left: 100%;
+            }
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .scroll-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #e50914;
+            color: #fff;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            text-decoration: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .scroll-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scroll-to-top:hover {
+            background-color: #f40612;
+            transform: scale(1.1);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            header {
+                padding: 15px 20px;
+            }
+
+            .logo {
+                font-size: 2rem;
+            }
+
+            nav ul li {
+                margin-left: 15px;
+            }
+
+            .hero {
+                padding: 0 20px;
+            }
+
+            .hero h1 {
+                font-size: 3rem;
+            }
+
+            .hero p {
+                font-size: 1.2rem;
+            }
+
+            .btn {
+                padding: 12px 30px;
+                font-size: 1rem;
+            }
+
+            .movies-row {
+                padding: 50px 20px;
+            }
+
+            .featured-section {
+                padding: 50px 20px;
+            }
+
+            .featured-content h2 {
+                font-size: 2.5rem;
+            }
+
+            .featured-content p {
+                font-size: 1.2rem;
+            }
+
+            .categories-section {
+                padding: 50px 20px;
+            }
+
+            .newsletter-section {
+                padding: 50px 20px;
+            }
+
+            .newsletter-form {
+                flex-direction: column;
+            }
+
+            .newsletter-form input[type="email"] {
+                border-radius: 5px;
+                margin-bottom: 10px;
+            }
+
+            .newsletter-form button {
+                border-radius: 5px;
+            }
+        }
+    </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="logo">Film Galaxy</div>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="movies.html">Movies</a></li>
+                <li><a href="#New & Popular">New & Popular</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero" id="home">
+            <div class="hero-content">
+                <h1>Unlimited Entertainment</h1>
+                <p>Stream the best movies, TV shows, and more. Anytime, anywhere.</p>
+                <a href="movies.html" class="btn">Start Watching</a>
+                <a href="" class="btn btn-secondary">Learn More</a>
+            </div>
+        </section>
+
+        <section class="movies-row" id="trending">
+            <h2>Trending Now</h2>
+            <div class="movie-list">
+                <!-- Movie items will be dynamically added here -->
+            </div>
+        </section>
+
+        <section class="featured-section">
+            <div class="featured-content">
+                <h2>Featured: The Crown</h2>
+                <p>Experience the gripping saga of the British royal family. Witness history unfold through the eyes of Queen Elizabeth II in this critically acclaimed series.</p>
+                <a href="/movies.html" class="btn">Watch Now</a>
+            </div>
+        </section>
+
+        <section class="movies-row" id="new-releases">
+            <h2>New Releases</h2>
+            <div class="movie-list">
+                <!-- Movie items will be dynamically added here -->
+            </div>
+        </section>
+
+        <section class="categories-section" id="categories">
+            <h2 class="section-title">Explore Categories</h2>
+            <div class="categories-grid">
+                <div class="category-item">
+                    <i class="fas fa-film"></i>
+                    <h3>Action</h3>
+                    <p>Thrilling adventures and explosive excitement</p>
+                </div>
+                <div class="category-item">
+                    <i class="fas fa-heart"></i>
+                    <h3>Romance</h3>
+                    <p>Love stories that will melt your heart</p>
+                </div>
+                <div class="category-item">
+                    <i class="fas fa-ghost"></i>
+                    <h3>Horror</h3>
+                    <p>Spine-chilling tales to keep you up at night</p>
+                </div>
+                <div class="category-item">
+                    <i class="fas fa-laugh"></i>
+                    <h3>Comedy</h3>
+                    <p>Hilarious shows to brighten your day</p>
+                </div>
+                <div class="category-item">
+                    <i class="fas fa-rocket"></i>
+                    <h3>Sci-Fi</h3>
+                    <p>Mind-bending journeys through space and time</p>
+                </div>
+                <div class="category-item">
+                    <i class="fas fa-book"></i>
+                    <h3>Drama</h3>
+                    <p>Compelling stories that touch the heart</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="testimonials-section">
+            <h2 class="section-title">What Our Viewers Say</h2>
+            <div class="testimonial-slider">
+                <div class="testimonial">
+                    <p>"StreamFlix has completely changed how I enjoy movies and TV shows. The selection is incredible!"</p>
+                    <span class="testimonial-author">- Sarah J.</span>
+                </div>
+                <!-- More testimonials can be added here -->
+            </div>
+        </section>
+
+        <section class="faq-section">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <div class="faq-question">What is StreamFlix?</div>
+                    <div class="faq-answer">StreamFlix is a streaming service that offers a wide variety of award-winning TV shows, movies, anime, documentaries, and more on thousands of internet-connected devices.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">How much does StreamFlix cost?</div>
+                    <div class="faq-answer">StreamFlix offers several plans to meet your needs. The basic plan starts at $8.99 per month, and the premium plan is $17.99 per month.</div>
+                </div>
+                <!-- More FAQ items can be added here -->
+            </div>
+        </section>
+
+        <section class="newsletter-section">
+            <h2 class="section-title">Stay Updated</h2>
+            <p>Subscribe to our newsletter for the latest updates and exclusive offers.</p>
+            <form class="newsletter-form">
+                <input type="email" placeholder="Enter your email" required>
+                <button type="submit">Subscribe</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>Company</h3>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Press</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">Help Center</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Legal</h3>
+                <ul>
+                    <li><a href="#">Terms of Use</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Cookie Preferences</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-youtube"></i></a>
+        </div>
+        <p>&copy; 2023 Film Galaxy. All rights reserved.</p>
+    </footer>
+
+    <a href="#" class="scroll-to-top">↑</a>
+
+    <script>
+        // Header scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            const scrollToTop = document.querySelector('.scroll-to-top');
+            header.classList.toggle('scrolled', window.scrollY > 50);
+            scrollToTop.classList.toggle('visible', window.scrollY > 300);
+        });
+
+        // Dynamically add movies
+        const movieLists = document.querySelectorAll('.movie-list');
+        const movieData = [
+            { title: 'Плохие Парни', image: 'https://static.hdrezka.ac/i/2024/4/19/mc7925f10c309rn39p19f.jpg', description: '' },
+            { title: 'The Shawshank Redemption', image: 'https://static.hdrezka.ac/i/2024/5/10/pca426a81de8fsc57l44x.jpg', description: 'A tale of hope and friendship in the face of injustice.' },
+            { title: 'Pulp Fiction', image: 'https://static.hdrezka.ac/i/2013/10/22/u84e8700427bfej45n74j.jpg', description: 'A nonlinear narrative of crime and redemption.' },
+            { title: 'The Dark Knight', image: 'https://static.hdrezka.ac/i/2024/10/1/wcc0cad3b0584zr82h94s.jpg', description: 'Batman faces his greatest challenge yet.' },
+            { title: 'Forrest Gump', image: 'https://static.hdrezka.ac/i/2023/1/18/y6e04528a82c2pr44o93o.jpg', description: 'A heartwarming journey through defining moments in American history.' },
+            { title: 'The Matrix', image: 'https://static.hdrezka.ac/i/2024/8/12/e105621c7e8f2sx38p29l.jpg', description: 'A sci-fi masterpiece about the nature of reality.' },
+            { title: 'Goodfellas', image: 'https://static.hdrezka.ac/i/2024/6/19/r31ebd2898fefyz62k19b.jpg', description: 'The rise and fall of a mob associate.' },
+            { title: 'Schindler\'s List', image: 'https://static.hdrezka.ac/i/2024/5/30/g6afce2767ed8hj96d61w.jpg', description: 'A powerful true story of one man\'s effort to save Jewish lives during the Holocaust.' }
+        ];
+
+        movieLists.forEach(list => {
+            movieData.forEach(movie => {
+                const movieElement = document.createElement('div');
+                movieElement.classList.add('movie');
+                movieElement.innerHTML = `
+                    <img src="${movie.image}" alt="${movie.title}">
+                    <div class="movie-info">
+                        <h3>${movie.title}</h3>
+                        <p>${movie.description}</p>
+                        <a href="movies.html" class="btn">Watch Now</a>
+                    </div>
+                `;
+                list.appendChild(movieElement);
+            });
+        });
+
+        // Scroll animation
+        const scrollElements = document.querySelectorAll('.movies-row, .featured-section, .categories-section, .newsletter-section, .testimonials-section, .faq-section');
+        const elementInView = (el, percentageScroll = 100) => {
+            const elementTop = el.getBoundingClientRect().top;
+            return (
+                elementTop <= 
+                ((window.innerHeight || document.documentElement.clientHeight) * (percentageScroll/100))
+            );
+        };
+
+        const displayScrollElement = (element) => {
+            element.classList.add('visible');
+        };
+
+        const hideScrollElement = (element) => {
+            element.classList.remove('visible');
+        };
+
+        const handleScrollAnimation = () => {
+            scrollElements.forEach((el) => {
+                if (elementInView(el, 70)) {
+                    displayScrollElement(el);
+                } else {
+                    hideScrollElement(el);
+                }
+            })
+        }
+
+        window.addEventListener('scroll', () => {
+            handleScrollAnimation();
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Scroll to top functionality
+        document.querySelector('.scroll-to-top').addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Add floating animation to hero content
+        const heroContent = document.querySelector('.hero-content');
+        heroContent.style.animation = `${heroContent.style.animation}, float 6s ease-in-out infinite`;
+
+        // Newsletter form submission (you would typically send this to a server)
+        document.querySelector('.newsletter-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Thank you for subscribing!');
+            e.target.reset();
+        });
+
+        // FAQ functionality
+        const faqQuestions = document.querySelectorAll('.faq-question');
+        faqQuestions.forEach(question => {
+            question.addEventListener('click', () => {
+                const answer = question.nextElementSibling;
+                answer.style.display = answer.style.display === 'block' ? 'none' : 'block';
+            });
+        });
+
+        // Simple testimonial slider
+        const testimonials = [
+            { text: "StreamFlix has completely changed how I enjoy movies and TV shows. The selection is incredible!", author: "Sarah J." },
+            { text: "I love the personalized recommendations. It's like StreamFlix knows exactly what I want to watch!", author: "Mike R." },
+            { text: "The streaming quality is top-notch, and I never have to worry about buffering. Great service!", author: "Emily T." }
+        ];
+
+        let currentTestimonialIndex = 0;
+        const testimonialElement = document.querySelector('.testimonial');
+
+        function updateTestimonial() {
+            const currentTestimonial = testimonials[currentTestimonialIndex];
+            testimonialElement.innerHTML = `
+                <p>"${currentTestimonial.text}"</p>
+                <span class="testimonial-author">- ${currentTestimonial.author}</span>
+            `;
+            currentTestimonialIndex = (currentTestimonialIndex + 1) % testimonials.length;
+        }
+
+        updateTestimonial(); // Initial update
+        setInterval(updateTestimonial, 5000); // Change testimonial every 5 seconds
+    </script>
+</body>
+</html>

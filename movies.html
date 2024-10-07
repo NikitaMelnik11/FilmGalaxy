@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Film Galaxy</title>
+    <link rel="icon" type="images/x-icon" href="https://cdn.icon-icons.com/icons2/1874/PNG/512/iconfinder-popcorncinemafilmsweetdessertfoodfastfood-4306481_119912.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
+        }
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            color: #e50914;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        .home-button {
+            background-color: #e50914;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .home-button:hover {
+            background-color: #ff0a16;
+            transform: translateY(-2px);
+        }
+        .hero {
+            height: 80vh;
+            background: url('https://cdn.pixabay.com/photo/2022/02/21/06/11/tablet-7025855_1280.jpg') no-repeat center center / cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            margin-top: 70px;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+        }
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            padding: 20px;
+        }
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            animation: fadeInUp 1s ease-out;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            animation: fadeInUp 1s ease-out 0.5s both;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .filter-section {
+            padding: 20px 50px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            position: sticky;
+            top: 70px;
+            z-index: 100;
+        }
+        .filter-button {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .filter-button:hover, .filter-button.active {
+            background-color: #e50914;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(229, 9, 20, 0.3);
+        }
+        .movies-section {
+            padding: 20px 50px;
+        }
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .movie {
+            position: relative;
+            overflow: hidden;
+            border-radius: 5px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        .movie:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        .movie img {
+            width: 100%;
+            height: auto;
+            transition: filter 0.3s ease;
+        }
+        .movie:hover img {
+            filter: brightness(0.7);
+        }
+        .movie-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+        .movie:hover .movie-info {
+            transform: translateY(0);
+        }
+        .movie-info h3 {
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+        .movie-info p {
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            overflow: auto;
+        }
+        .modal-content {
+            background-color: #111;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #e50914;
+            width: 90%;
+            max-width: 800px;
+            border-radius: 10px;
+            position: relative;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover {
+            color: #e50914;
+        }
+        #searchInput {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            background-color: #333;
+            border: none;
+            color: #fff;
+            border-radius: 5px;
+        }
+        .scroll-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #e50914;
+            color: #fff;
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            line-height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none;
+            transition: opacity 0.3s ease;
+        }
+        .scroll-to-top:hover {
+            opacity: 0.8;
+        }
+        .video-container {
+            display: none;
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .modal-buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        .modal-button {
+            background-color: #e50914;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+        .modal-button:hover {
+            background-color: #ff0a16;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">FILM GALAXY</div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Welcome to Film Galaxy</h1>
+            <p>Discover the best movies and TV shows from across the universe</p>
+        </div>
+    </section>
+
+    <div class="filter-section" id="genreFilter">
+        <!-- Genre buttons will be added here -->
+    </div>
+
+    <div class="filter-section" id="yearFilter">
+        <!-- Year buttons will be added here -->
+    </div>
+
+    <input type="text" id="searchInput" placeholder="Search for movies...">
+
+    <main id="main">
+        <div class="movies-grid" id="moviesGrid">
+            <!-- Movies will be dynamically added here -->
+        </div>
+    </main>
+
+    <div id="movieModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="movieInfo">
+                <h2 id="modalTitle"></h2>
+                <p id="modalYear"></p>
+                <p id="modalCategory"></p>
+                <p id="modalDescription"></p>
+                <div class="modal-buttons">
+                    <button id="watchMovieBtn" class="modal-button">Watch Movie</button>
+                </div>
+            </div>
+            <div id="videoContainer" class="video-container">
+                <iframe id="videoPlayer" frameborder="0" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <div class="scroll-to-top" id="scrollToTop">↑</div>
+
+    <script>
+        const movies = [
+            { 
+                title: "Дэдпул и Росомаха", 
+                year: 2024, 
+                category: "Action, Adventure, Comedy", 
+                image: "https://statichdrezka.ac/i/2024/10/1/wcc0cad3b0584zr82h94s.jpg", 
+                description: "Провалив собеседование на вступление в команду Мстителей и расставшись со своей девушкой Ванессой, Уэйд Уилсон ведет спокойную и предсказуемую жизнь, работая продавцом подержанных автомобилей. Поскольку его вселенная оказывается под угрозой из-за смерти «ключевого субъекта» Логана, Уэйд вынужден вновь надеть свой костюм и вернуться к супергеройскому ремеслу. Дэдпул начинает путешествовать по мультивселенной, чтобы разыскать подходящую версию Росомахи и с помощью него спасти родной мир. В ходе своих совместных злоключений двое сталкиваются с могущественным врагом в лице Кассандры Нова — сестры-близнеца Чарльза Ксавьера.", 
+                movieUrl: "https://kinobar.vip/33083-dedpul-i-rossomaha-2024.html"
+            },
+            { 
+                title: "Бордерлендс", 
+                year: 2024, 
+                category: "	Фантастика, Боевики, Приключения, Комедии, Триллеры, Зарубежные", 
+                image: "https://statichdrezka.ac/i/2024/5/10/pca426a81de8fsc57l44x.jpg", 
+                description: "Лилит, одна из самых опытных и профессиональных охотниц за головами во всей галактике, неохотно возвращается на родную планету Пандору, кишащую огромными монстрами, сумасшедшими бандитами и прочими опасностями. Ее цель — разыскать Тину, похищенную дочь могущественного корпоративного магната Атласа. Охотница меняет свои планы, когда выясняется, что отец хочет вернуть дочь против ее воли, чтобы благодаря ее эридианскому происхождению открыть Хранилище, где хранятся секреты передовых технологий затерянной цивилизации. Лилит решает собрать разношерстную команду из искателей приключений, чтобы самой раскрыть секрет Хранилища.",
+                movieUrl: "https://uaserials.pro/9047-borderlendz.html"
+            },
+            { 
+                title: "Монстры на каникулах: Трансформания", 
+                year: 2022, 
+                category: "Приключения, Комедии, Фэнтези, Семейные, Ужасы, Полнометражные, Зарубежные", 
+                image: "https://statichdrezka.ac/i/2021/8/17/ic122ed0774a4nd73c14x.jpg", 
+                description: "Дракуле и его приятелям предстоит окунуться в очередной поток приключений: на этот раз новое изобретение Ван Хельсинга превращает вампира и его друзей в обычных людей, а Джонни становится настоящим чудовищем. Теперь Драку и его товарищам придётся открыть для себя новый мир, в котором у них не будет сверхъестественных способностей, а Джонни – раскрыть непривычную для себя сущность жутковатого монстра. К тому же, главным героям необходимо отправиться из отеля «Трансильвания» в захватывающий путь по всему свету, чтобы отыскать средство, которое вернёт всё на свои места.",
+                movieUrl: "https://lamafilm.club/film/monstry-na-kanikulax-transformaniya/"
+            },
+            { 
+                title: "Союз", 
+                year: 2024, 
+                category: "	Боевики, Триллеры, Комедии, Зарубежные", 
+                image: "https://statichdrezka.ac/i/2024/6/27/e4856e7ab7022hl99h16r.jpg", 
+                description: "Майк — ничем не примечательный мужчина, который работает на стройке и проводит свободное время в баре с приятелями. Однажды в жизнь героя возвращается его бывшая девушка Роксана: ей успешно удается завербовать экс-возлюбленного в качестве нового члена организации Союз — «невидимой армии», работающей на правительство США. Оказавшись в Лондоне, Майк начинает собственный путь шпиона под присмотром нескольких более опытных коллег, попутно превращаясь в человека, которому Роксана может доверять. Вскоре Майк оказывается вовлеченным в работу над чрезвычайно сложными и важными шпионскими миссиями.",
+                movieUrl: "https://kinobar.vip/34411-soyuz-2024.html"
+            },
+            { 
+                title: "Плохие парни до конца / Плохие парни 4", 
+                year: 2024, 
+                category: "	Боевики, Приключения, Комедии, Триллеры, Криминал, Зарубежные", 
+                image: "https://statichdrezka.ac/i/2024/4/19/mc7925f10c309rn39p19f.jpg", 
+                description: "Полицейский Майк Лоури решает связать себя узами брака с Кристин, однако во время свадьбы у его напарника и друга Маркуса Бернетта случается сердечный приступ. По мере того, как Маркус восстанавливается после болезни, приятели получают неожиданную информацию: их покойный капитан Конрад Говард подозревается в коррупционном скандале, связанном с наркокартелями. Главные герои отказываются верить обвинениям и намереваются самостоятельно доказать невиновность своего коллеги. Единственным человеком, способным помочь выйти на след настоящих преступников, оказывается заключенный в тюрьму сын Майка — Армандо.",
+                movieUrl: "https://kinobar.vip/33532-plohie-parni-do-konca-2024.html"
+            },
+            { 
+                title: "Одноклассники", 
+                year:2010, 
+                category: "Комедии, Зарубежные", 
+                image: "https://statichdrezka.ac/i/2013/10/22/u84e8700427bfej45n74j.jpg", 
+                description: "Сюжет комедийного фильма рассказывает о том, как пятеро школьных друзей спустя тридцать лет встречаются, чтобы проводить в последний путь своего любимого тренера по баскетболу. После похорон они отправляются вместе со своими семьями в домик у озера, чтобы отдохнуть и вспомнить былые времена. Прибыв на место, уже состоявшиеся в жизни мужики и отцы, превращаются в самых настоящих подростков. Они много общаются, делятся насущными проблемами в отношении семьи и детей. Впереди героев ждет море увлекательных приключений. К тому же им предстоит показать своим детям, что настоящее развлечение и веселье – это не телик и компьютерные игры, а хорошая дружеская компания.",
+                movieUrl: "https://kinobar.vip/968-odnoklassniki-v3.html"
+            },
+            { 
+                title: "Человек-муравей и Оса: Квантомания",
+                year: 2023, 
+                category: "Боевики, Приключения, Фантастика, Детективы, Триллеры, Комедии, Зарубежные", 
+                image: "https://statichdrezka.ac/i/2023/1/18/y6e04528a82c2pr44o93o.jpg", 
+                description: "Скотт Лэнг ведет счастливый образ жизни: он пользуется популярностью в качестве Человека-муравья и одного из Мстителей, а также заканчивает работу над мемуарами. Неприятности приходят к Скотту в лице его 18-летней дочери Кэсси, стремящейся получить связь с квантовым миром. Научные эксперименты девушки становятся причиной того, что Скотт и его команда, включая Хоуп и Джанет, переносятся в альтернативную реальность, наполненную сообществом инопланетных существ. Для Джанет возвращение в квантовый мир означает воссоединение с могущественным Кангом Завоевателем, преследующим коварные планы в отношении Земли и других миров. Единственным человеком, способным остановить Канга Завоевателя, оказывается Человек-муравей.",
+                movieUrl: "https://kinobar.vip/28273-chelovek-muravey-i-osa-kvantomaniya-2023.html"
+            },
+            { 
+                title: "Без ответа", 
+                year: 2023, 
+                category: "	Боевики, Приключения, Комедии, Мелодрамы, Зарубежные", 
+                image: "https://statichdrezka.ac/i/2023/3/7/u086a69a748e7an63p99b.jpg", 
+                description: "Скромный фермер Коул Тернер случайно знакомится на уличной ярмарке в Вашингтоне с очаровательной Сэди Роудс, работающей арт-куратором и путешествующей по всему миру. Будучи безнадежным романтиком, мужчина убеждает себя в том, что наконец повстречал девушку всей своей жизни. Он без предупреждения отправляется вслед за ней в Лондон, где навлекает на себя смертельную опасность и выясняет, что Сэди — агент ЦРУ, специализирующийся на секретных операциях. Второе свидание невольно превращается в зубодробительное приключение по спасению мира.",
+                movieUrl: "https://kinobar.vip/29599-bez-otveta-2023.html"
+            },
+            { 
+                title: "Человек, который изменил всё", 
+                year: 2011, 
+                category: "	Драмы, Спортивные, Биографические, Зарубежные", 
+                image: "https://statichdrezka.ac/i/2013/7/30/w49e2d1b31aecvc73r99y.jpg", 
+                description: "Билли Бин – менеджер бейсбольной команды Окленда, стал настоящей легендой. Он поставил перед собой, для того времени, невыполнимую цель – создать хорошую бейсбольную команду, несмотря на денежные проблемы. Бин такой человек, который привык все доводить до конца. Он пересматривает устройство мира спорта, и вносит свои коррективы, которые враждебно воспринимаются со стороны прессы, тренера команды и болельщиков. Но целеустремленность, настойчивость и упорство Билли совершили невозможное, и он стал человеком, изменившим все, и команда которого установила рекорд бейсбольной лиги.",
+                movieUrl: "https://kinobar.vip/701-chelovek-kotoryy-izmenil-vse-hd-v1.html"
+            },
+            { 
+                title: "Бамблби", 
+                year: 2018, 
+                category: "	Боевики, Приключения, Фантастика, Зарубежные", 
+                image: "https://statichdrezka.ac/i/2022/11/16/p21e371da54dbml48c57k.jpg", 
+                description: "В 1987-м году сильно пострадавший в бою Бамблби, уходя от преследователей, принимает форму автомобиля и находит безопасное укрытие на свалке в маленьком прибрежном городке, расположенном в Калифорнии. Там автобота обнаруживает девушка по имени Чарли Уотсон, находящаяся на пороге своего восемнадцатилетия и увлекающаяся механикой. Она убеждает владельца свалки отдать ей машину в качестве подарка на день рождения, однако вскоре понимает, что перед ней оказался не просто старый Фольксваген, а самый настоящий инопланетный робот-трансформер",
+                movieUrl: "https://kinobar.vip/14691-bamblbi-v2.html"
+            },
+            { 
+                title: "Полтора шпиона", 
+                year: 2016, 
+                category: "	Комедии, Криминал, Боевики, Зарубежные", 
+                image: "https://statichdrezka.ac/i/2021/4/30/w08b2a6174d1acx20t40x.jpg", 
+                description: "В 1996 году Кэлвин Джойнер был звездным спортсменом, которому пророчили великое будущее, однако двадцать лет спустя он работает бухгалтером и недоволен собственной карьерой. По мере приближения вечера встречи выпускников герой пытается найти одноклассников, а затем с ним связывается некто Боб Стоун, которого во время учебы в школе знали как Робби Вейрдичт. Во время встречи с Бобом Кэлвин с удивлением отмечает, как бывший одноклассник изменился, став мускулистым и самоуверенным мужчиной. Боб просит старого приятеля посмотреть несколько подозрительных бухгалтерских книг, Кэлвин соглашается, после чего оказывается в поле зрения агентов ЦРУ, а его серые будни сменяются опасными приключениями",
+                movieUrl: "https://kinobar.vip/8604-poltora-shpiona-v2.html"
+            },
+            { 
+                title: "Человек-паук: Возвращение домой", 
+                year: 2017, 
+                category: "	Фантастика, Боевики, Приключения, Зарубежные", 
+                image: "https://statichdrezka.ac/i/2021/1/27/g965d89709063os19t55a.jpg", 
+                description: "Действия разворачиваются спустя некоторое время после событий картины «Первый мститель: Противостояние». Питер Паркер, обычный школьник с необычным способностями, воодушевлённый опытом, полученным в противостоянии Мстителей, возвращается домой к тётушке Мэй. Но несмотря на то, что Тони Старк, новый наставник паренька, всячески пытается его сдерживать, Питер всё чаще ловит себя на мысли, что скучная повседневная жизнь уже не для него. Роль скромного паренька с невероятными способностями, живущего по соседству с ничего не подозревающими жителями мегаполиса, совершенно его не устраивает. Парень хочет доказать всем и в первую очередь Старку, что он настоящий супергерой, способный защитить жителей города. Желая стать одним из Мстителей, парень начинает бороться с преступностью, но юношеская беспечность и несерьёзность подхода к столь опасному не только для него, но и в первую очередь для мирного населения делу, серьёзно беспокоит Старка, который считает, что юноше предстоит долгая работа над собой, но не отрицает его полезность для Мстителей. Это придаёт юноше сил в его нелёгком деле, и когда на горизонте неожиданно появляется некий Стервятник, Питер решает, что это отличный шанс проявить себя.",
+                movieUrl: "https://kinobar.vip/11224-chelovek-pauk-vozvraschenie-domoy-v4.html"
+            },
+            { 
+                title: "Семейный обмен", 
+                year: 2023, 
+                category: "	Комедии, Фэнтези, Зарубежные", 
+                image: "https://statichdrezka.ac/i/2024/1/18/u67656723a0abnc81t47j.jpg", 
+                description: "Джесс и Билл — родители 16-летней Сисси, 14-летнего Уайатта и малыша Майлза. Однажды они посещают планетарий, где происходит таинственное событие, которое приносит удивительные последствия для членов семьи на следующий день: Сисси меняется телами с Джесс, а Уайатт — с Биллом. Пока подростки пытаются ориентироваться в невероятно сложном мире взрослой жизни, их родители должны проложить собственный путь к успеху в современном обществе тинейджеров. Стремясь найти способ того, как вернуться в свои тела, четверка быстро привыкает к новым реалиям, одновременно пытаясь понять различия между двумя поколениями.",
+                movieUrl: "https://kinobar.vip/32061-semeynyy-obmen-2023.html"
+            },
+            { 
+                title: "Мег: Монстр глубины", 
+                year: 2018, 
+                category: "	Боевики, Фантастика, Триллеры, Ужасы, Зарубежные", 
+                image: "https://statichdrezka.ac/i/2023/5/10/e378408dbbf26cw29o95s.jpg", 
+                description: "В прошлом опытный спасатель Джонас, находясь на большой глубине, столкнулся с огромным существом, которое было способно за короткое время уничтожить ядерную подлодку. В тот раз у него не только получилось сохранить себе жизнь, но и спасти нескольких людей, но после того инцидента герой зарекся погружаться",
+                movieUrl: "https://kinobar.vip/15257-meg-monstr-glubiny-1-v2.html"
+            },
+            { 
+                title: "Волк с Уолл-стрит", 
+                year: 2013, 
+                category: "	Драмы, Комедии, Криминал, Биографические, Зарубежные", 
+                image: "https://statichdrezka.ac/i/2021/7/31/m1b7eee3afd8djq76a49a.jpeg", 
+                description: "В конце 80-х годов Белфорт открывает свою собственную брокерскую контору и очень быстро зарабатывает огромное состояние. Он с головой погружается в роскошную жизнь, и на протяжении долго периода времени ведет беззаботный образ жизни. Белфорт стал одним из тех, кого назвали «элита Уолл-стрит», но ему было этого мало, он жаждал чего-то более масштабного. Однако рано или поздно все хорошее заканчивается. Именно такая участь постигла и гениального брокера. Сначала образ жизни, который вел Джордан, сделал его алкоголиком и наркоманом, а затем еще и всплыли некоторые из его финансовых махинаций, что само собой привлекло внимание ФБР",
+                movieUrl: "https://kinobar.vip/102-volk-s-uoll-strit-v1.html"
+            },
+            { 
+                title: "Мой шпион: Вечный город", 
+                year: 2024, 
+                category: "	Боевики, Комедии, Зарубежные", 
+                image: "https://statichdrezka.ac/i/2024/6/19/r31ebd2898fefyz62k19b.jpg", 
+                description: "Джей Джей стал полноправным опекуном Софи, но при каждом удобном случае она намекает ему, что он – не ее отец. Он обучает Софи рукопашному бою, метанию ножей и прочим шпионским навыкам, поскольку девочка серьезно настроена стать полевым агентом спецслужб, как и ее наставник. Софи состоит в школьном хоре, который выигрывает в конкурсе поездку в Италию, и Джей Джей, с недавних пор сменивший работу полевого агента на должность аналитика, отпрашивается с работы, чтобы стать одним из сопровождающих группы. Поначалу все идёт превосходно, но когда террористы похищают Колина, сына заместителя директора ЦРУ, отдых главных героев превращается в спецзадание",
+                movieUrl: "https://kinobar.vip/34563-moy-shpion-vechnyy-gorod-2024.html"
+            },
+            { 
+                title: "Мстители: Война бесконечности", 
+                year: 2018, 
+                category: "Фантастика, Боевики, Приключения, Зарубежные", 
+                image: "https://statichdrezka.ac/i/2021/9/16/ac6ab1af9ec81yb86k95t.jpg", 
+                description: "Действие фильма разворачивается спустя несколько лет после событий, показанных в «Противостоянии». Несмотря на то, что в рядах Мстителей произошел раскол, они все еще продолжают защищать мир от всевозможных опасностей, с которыми не может справиться один герой. Но в этот раз из темных глубин космоса на Землю надвигается новая угроза, справиться с которой будет не под силу даже Мстителям – безумный титан Танос возжелал собрать Камни Бесконечности, чтобы с их помощью испепелить половину жизни во Вселенной. И теперь нашим героям нужно срочно обзавестись группой могущественных союзников, чтобы дать решительный отпор всесильному безумцу",
+                movieUrl: "https://kinobar.vip/6626-mstiteli-voyna-beskonechnoosti-chast1-3-v6.html"
+            },
+            { 
+                title: "Король Ричард", 
+                year: 2021, 
+                category: "	Драмы, Биографические, Спортивные, Зарубежные", 
+                image: "https://statichdrezka.ac/i/2021/10/1/gafc2238cec92vz22a59a.jpg", 
+                description: "Основанный на реальной истории, фильм рассказывает о Ричарде Уильямсе и его жене Брэнди, которые с помощью невероятных усилий вырастили из своих детей двух самых выдающихся спортсменов в мире. Сюжет берет свое начало в 1988 году в Комптоне, штат Калифорния, где семья, воспитывающая пять дочерей, видит в них будущих врачей и адвокатов, а также парочку звезд большого тенниса. Под надзором сурового и требовательного отца две девочки берут в руки ракетки и за годы изнурительных тренировок входят в историю как легендарные теннисистки – Венус и Серена Уильямс",
+                movieUrl: "https://kinobar.vip/24000-korol-richard-v1.html"
+            },
+            { 
+                title: "Крид: Наследие Рокки / Крид / Рокки 7: Крид", 
+                year: 2015, 
+                category: "	Драмы, Спортивные, Зарубежные", 
+                image: "https://statichdrezka.ac/i/2019/1/27/da56b3ad94979zf34f92s.jpg", 
+                description: "Отец Донни Джонсона, чемпион мира по боксу Аполло Крид, умер незадолго до рождения своего внебрачного сына. Несмотря на это, Донни желает пойти по его стопам и стать легендой в этом виде спорта. Для этого он отправляется на поиски бывшего соперника и лучшего друга своего покойного отца, коим является профессиональный боксер Рокки Бальбоа, чтобы нанять его в качестве тренера. Сначала отошедший от дел Рокки отказывает ему, но вскоре он видит, что Донни обладает силой и напористостью, которые были присущи Аполло, и соглашается тренировать его",
+                movieUrl: "https://kinobar.vip/6941-rokki7-v3.html"
+            },
+            { 
+                title: "Крид 3", 
+                year: 2023, 
+                category: "	Драмы, Спортивные, Зарубежные", 
+                image: "https://statichdrezka.ac/i/2023/2/17/z88df14f4a9bceh77u58j.jpg", 
+                description: "Адонис «Донни» Крид наслаждается комфортной и счастливой жизнью. Он управляет престижным боксерским залом, а также ведет образ жизни примерного семьянина вместе со своей супругой Бьянкой и их не по годам развитой дочерью Амарой. Привычная жизнь Крида начинается меняться, когда из тюрьмы выходит некогда талантливый боксер Дамиан «Дама» Андерсон. Дамиан решительно настроен получить новый шанс на то, чего он был лишен из-за продолжительного тюремного заключения: бой в профессиональном боксе. Измученный чувством вины за арест и заключение Андерсона, Адонис выделяет ему место для тренировок в своем зале. Однако очень скоро амбиции Дамиана и чувство вины Адониса становятся причиной соперничества, которое можно решить только на ринге",
+                movieUrl: "https://kinobar.vip/28219-krid-3-2023.html"
+            },
+            { 
+                title: "Время для себя", 
+                year: 2022, 
+                category: "	Комедии, Зарубежные", 
+                image: "https://statichdrezka.ac/i/2022/7/26/p6616e0736febvu84v29t.jpg", 
+                description: "Фильм рассказывает об отце, который впервые за много лет находит время для себя, пока его жена и дети в отъезде. Он воссоединяется с другом, чтобы провести дикие выходные",
+                movieUrl: "https://kinobar.vip/27407-vremya-dlya-sebya-2022.html"
+            },
+            { 
+                title: "Это всё он", 
+                year: 2021, 
+                category: "	Комедии, Мелодрамы, Зарубежные", 
+                image: "https://statichdrezka.ac/i/2021/9/1/rc72114824520cb82t73g.jpg", 
+                description: "«Это всё он» с Эддисон Рэй и Тэннером Бьюкэнэном в главных ролях — это новый взгляд на оригинальный сюжет классического подросткового фильма «Это всё она» 1999 года. В современной трактовке популярная героиня (Эддисон Рэй) собирается превратить главного неудачника школы (Тэннер Бьюкэнэн) в короля выпускного бала",
+                movieUrl: "https://kinobar.vip/24063-eto-vse-on.html"
+            },
+            { 
+                title: "Дюна", 
+                year: 2021, 
+                category: "	Фантастика, Приключения, Драмы, Зарубежные", 
+                image: "https://statichdrezka.ac/i/2021/8/18/y31f521cf70e9qp69o39f.jpg", 
+                description: "Фильм, основанный на одноимённом фантастическом романе Френка Герберта, расскажет историю Пола Атрейдеса — талантливого молодого человека, рождённого в состоятельной семье. Ему суждено великое будущее, которое он пока не в силах осознать. Однажды его семейство отправляют на далёкую и опасную планету Арракис, где среди бесконечных песчаных дюн добывают специю — психоделическое вещество, необходимое для межгалактических путешествий. Добыче мешают жуткие существа — огромные песчаные черви, реагирующие на звук и пожирающие всё на своём пути. Пока Атрейдесы осваиваются на планете, они не догадываются, что их отправили на верную смерть",
+                movieUrl: "https://kinobar.vip/7189-dyuna-1-v3.html"
+            },
+            { 
+                title: "Дюна: Часть вторая", 
+                year: 2024, 
+                category: "	Фантастика, Боевики, Приключения, Драмы, Зарубежные", 
+                image: "https://statichdrezka.ac/i/2024/4/8/o5ddc7d8cf436un17g92v.jpg", 
+                description: "Молодой герцог Пол Атрейдес, обладающий даром ясновидения, чудом переживает покушение на свою семью, после чего вместе с матерью, леди Джессикой, скрывается от преследования среди бескрайней пустыни. Двое находят безопасное убежище в лагере фрименов — свободолюбивого народа, который за многие столетия приспособился к жизни в суровых условиях планеты Арракис. Пол встречает там свою любовь по имени Чани, пытается отомстить заговорщикам за убийство семьи, а также принимает свою судьбу Квисатц Хадераха — мессии, которому необходимо привести человечество к лучшему будущему",
+                movieUrl: "https://kinobar.vip/30203-dyuna-2-2023.html"
+            },
+            { 
+                title: "Дэдпул", 
+                year: 2016, 
+                category: "	Фантастика, Боевики, Комедии, Приключения, Зарубежные", 
+                image: "https://statichdrezka.ac/i/2021/11/4/id7b054718efbfy26j56t.jpeg", 
+                description: "Уэйд Уилсон – профессиональный наёмник, мастерски владеющий всевозможным холодным и огнестрельным оружием, знающий несколько смертельных боевых искусств. Узнав, что его тело убивает неизлечимый рак, находящийся в терминальной стадии, понимая, что жить ему осталось совсем недолго, Уэйд соглашается на предложение тайной военной организации, специализирующейся на создании биологического оружия путём сверхусиления людей. После проведённых опытов, значительно увеличивших его силу, рефлексы и выносливость, Уилсон получает способность к ускоренной регенерации, способной восстанавливать его тело после всевозможных, даже смертельных, повреждений. Обретенная способность к ускоренному исцелению, что немаловажно, могла восстанавливать убиваемые раком клетки, тем самым продлевая жизнь Уэйда, хотя её возможностей оказалось недостаточно, чтобы исцелить само заболевание. К тому же, проведённые многочисленные опыты вызвали нестабильность клеточной и нервной системы, жутко обезобразив нашего героя и сделав его действия абсолютно непредсказуемыми, порой даже безумными. И теперь, взяв себе прозвище Дэдпул, наш герой, рассыпаясь в остротах, сдабривая происходящее отборным чёрным юмором, с лёгкостью и присущей ему крутостью крошит плохих парней, пытаясь отыскать человека, который почти разрушил его жизнь",
+                movieUrl: "https://kinobar.vip/4880-dedpul-1-v3.html"
+            }
+        ];
+
+        const genreFilter = document.getElementById('genreFilter');
+        const yearFilter = document.getElementById('yearFilter');
+        const moviesGrid = document.getElementById('moviesGrid');
+        const searchInput = document.getElementById('searchInput');
+        const modal = document.getElementById('movieModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalYear = document.getElementById('modalYear');
+        const modalCategory = document.getElementById('modalCategory');
+        const modalDescription = document.getElementById('modalDescription');
+        const closeModal = document.getElementsByClassName('close')[0];
+        const scrollToTop = document.getElementById('scrollToTop');
+        const watchTrailerBtn = document.getElementById('watchTrailerBtn');
+        const watchMovieBtn = document.getElementById('watchMovieBtn');
+        const videoContainer = document.getElementById('videoContainer');
+        const videoPlayer = document.getElementById('videoPlayer');
+
+        let selectedGenre = 'All';
+        let selectedYear = 'All';
+
+        // Get unique genres and years
+        const genres = ['All', ...new Set(movies.map(movie => movie.category))];
+        const years = ['All', ...new Set(movies.map(movie => movie.year))].sort((a, b) => b - a);
+
+        // Create filter buttons
+        function createFilterButtons(filterType, filterValues, filterContainer) {
+            filterValues.forEach(value => {
+                const button = document.createElement('button');
+                button.textContent = value;
+                button.classList.add('filter-button');
+                if (value === 'All') button.classList.add('active');
+                button.addEventListener('click', () => {
+                    filterContainer.querySelectorAll('.filter-button').forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    if (filterType === 'genre') {
+                        selectedGenre = value;
+                    } else {
+                        selectedYear = value;
+                    }
+                    filterMovies();
+                });
+                filterContainer.appendChild(button);
+            });
+        }
+
+        createFilterButtons('genre', genres, genreFilter);
+        createFilterButtons('year', years, yearFilter);
+
+        // Filter movies based on selected genre, year, and search input
+        function filterMovies() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const filteredMovies = movies.filter(movie => 
+                (selectedGenre === 'All' || movie.category === selectedGenre) &&
+                (selectedYear === 'All' || movie.year === selectedYear) &&
+                (movie.title.toLowerCase().includes(searchTerm) || movie.description.toLowerCase().includes(searchTerm))
+            );
+            displayMovies(filteredMovies);
+        }
+
+        // Display movies in the grid
+        function displayMovies(moviesToShow) {
+            moviesGrid.innerHTML = '';
+            moviesToShow.forEach(movie => {
+                const movieElement = document.createElement('div');
+                movieElement.classList.add('movie');
+                movieElement.innerHTML = `
+                    <img src="${movie.image}" alt="${movie.title}">
+                    <div class="movie-info">
+                        <h3>${movie.title}</h3>
+                        <p>${movie.year} - ${movie.category}</p>
+                    </div>
+                `;
+                movieElement.addEventListener('click', () => openModal(movie));
+                moviesGrid.appendChild(movieElement);
+            });
+        }
+
+        // Open modal with movie details
+        function openModal(movie) {
+            modalTitle.textContent = movie.title;
+            modalYear.textContent = `Year: ${movie.year}`;
+            modalCategory.textContent = `Category: ${movie.category}`;
+            modalDescription.textContent = movie.description;
+            
+            watchTrailerBtn.onclick = function() {
+                videoPlayer.src = movie.trailerUrl;
+                videoContainer.style.display = 'block';
+            };
+            
+            watchMovieBtn.onclick = function() {
+                videoPlayer.src = movie.movieUrl;
+                videoContainer.style.display = 'block';
+            };
+            
+            modal.style.display = 'block';
+        }
+
+        // Close modal
+        closeModal.onclick = function() {
+            modal.style.display = 'none';
+            videoContainer.style.display = 'none';
+            videoPlayer.src = '';
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+                videoContainer.style.display = 'none';
+                videoPlayer.src = '';
+            }
+        }
+
+        // Search functionality
+        searchInput.addEventListener('input', filterMovies);
+
+        // Scroll to top functionality
+        window.onscroll = function() {
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                scrollToTop.style.display = 'block';
+            } else {
+                scrollToTop.style.display = 'none';
+            }
+        };
+
+        scrollToTop.addEventListener('click', function() {
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        });
+
+
+        // Open modal with movie details
+        function openModal(movie) {
+        modalTitle.textContent = movie.title;
+        modalYear.textContent = `Year: ${movie.year}`;
+        modalCategory.textContent = `Category: ${movie.category}`;
+        modalDescription.textContent = movie.description;
+        
+        watchMovieBtn.onclick = function() {
+            videoPlayer.src = movie.movieUrl;
+            videoContainer.style.display = 'block';
+        };
+        
+        modal.style.display = 'block';
+    }
+
+        // Initial display of all movies
+        filterMovies();
+    </script>
+</body>
+</html>
