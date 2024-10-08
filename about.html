@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Film Galaxy</title>
+    <link rel="icon" type="image/x-icon" href="https://cdn.icon-icons.com/icons2/1874/PNG/512/iconfinder-popcorncinemafilmsweetdessertfoodfastfood-4306481_119912.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: #000;
+            padding: 20px 0;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            color: #e50914;
+            font-size: 2rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        main {
+            padding-top: 80px;
+        }
+
+        .hero {
+            background: url('https://assets.nflxext.com/ffe/siteui/vlv3/a43711df-c428-4f88-8bb3-b2ac5f20608f/32935458-d049-44c2-b94b-32f16d60ded1/IN-en-20230227-popsignuptwoweeks-perspective_alpha_website_large.jpg') no-repeat center center/cover;
+            height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            padding: 50px 0;
+        }
+
+        .section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .about-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .about-text {
+            flex: 1;
+            min-width: 300px;
+            padding: 20px;
+        }
+
+        .about-image {
+            flex: 1;
+            min-width: 300px;
+            text-align: center;
+        }
+
+        .about-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        .values {
+            background-color: #141414;
+            padding: 50px 0;
+        }
+
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .value-item {
+            background-color: #000;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .value-item i {
+            font-size: 3rem;
+            color: #e50914;
+            margin-bottom: 20px;
+        }
+
+        footer {
+            background-color: #141414;
+            color: #757575;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .about-content {
+                flex-direction: column;
+            }
+
+            .about-text, .about-image {
+                min-width: 100%;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo">Film Galaxy</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h1>About Film Galaxy</h1>
+                <p>Bringing the best of entertainment to your screens</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container">
+                <h2>Our Story</h2>
+                <div class="about-content">
+                    <div class="about-text">
+                        <p>Film Galaxy was founded in 2023 with a simple mission: to revolutionize the way people experience entertainment. We believe that great stories have the power to inspire, connect, and transform lives.</p>
+                        <p>Our journey began with a small team of passionate film enthusiasts and tech innovators. Today, we've grown into a global platform, serving millions of viewers across the world with a diverse library of movies, TV shows, documentaries, and original content.</p>
+                    </div>
+                    <div class="about-image">
+                        <img src="https://images.unsplash.com/photo-1585647347483-22b66260dfff?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Film Galaxy Team">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="values">
+            <div class="container">
+                <h2>Our Values</h2>
+                <div class="values-grid">
+                    <div class="value-item">
+                        <i class="fas fa-film"></i>
+                        <h3>Quality Content</h3>
+                        <p>We curate and create the best in entertainment, ensuring every title in our library meets the highest standards.</p>
+                    </div>
+                    <div class="value-item">
+                        <i class="fas fa-users"></i>
+                        <h3>Diversity & Inclusion</h3>
+                        <p>We celebrate diverse voices and stories, representing a wide range of perspectives and experiences.</p>
+                    </div>
+                    <div class="value-item">
+                        <i class="fas fa-rocket"></i>
+                        <h3>Innovation</h3>
+                        <p>We constantly push the boundaries of technology to enhance your viewing experience.</p>
+                    </div>
+                    <div class="value-item">
+                        <i class="fas fa-heart"></i>
+                        <h3>Customer First</h3>
+                        <p>Your satisfaction is our top priority. We're committed to providing exceptional service and support.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 Film Galaxy. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
